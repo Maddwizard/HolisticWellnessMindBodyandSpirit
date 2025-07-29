@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { ThemeProvider } from 'next-themes'
+import { SupabaseProvider } from './supabase-provider'
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -9,8 +10,10 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      {children}
-    </ThemeProvider>
+    <SupabaseProvider>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        {children}
+      </ThemeProvider>
+    </SupabaseProvider>
   )
 } 
