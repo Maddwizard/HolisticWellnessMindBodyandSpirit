@@ -38,7 +38,7 @@ export async function getAllContent(): Promise<ContentItem[]> {
             id,
             title: extractTitle(content),
             content,
-            category: category as any,
+            category: category as 'nutrition' | 'exercise' | 'meditation' | 'biblical-health',
             excerpt: extractExcerpt(content),
             tags: extractTags(content),
             publishedAt: new Date()

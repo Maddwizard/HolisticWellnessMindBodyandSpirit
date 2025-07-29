@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { Heart, BookOpen, Users, Award, Shield, Clock, Star, Leaf } from 'lucide-react'
+import { Heart, BookOpen, Users, Award, Shield, Leaf } from 'lucide-react'
 
 const features = [
   {
@@ -69,7 +69,7 @@ export function FeatureSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <Link
               key={feature.title}
               href={feature.href}

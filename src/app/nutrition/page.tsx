@@ -2,7 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Leaf, Apple, Wheat, Fish, Droplets, ArrowRight, BookOpen } from 'lucide-react'
+import { Apple, Wheat, Fish, Droplets, ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Biblical Nutrition | God\'s Design for Healthy Eating',
@@ -102,7 +102,7 @@ export default function NutritionPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 text-balance">
               Biblical Nutrition{' '}
-              <span className="text-gradient">God\'s Design</span>
+              <span className="text-gradient">God&apos;s Design</span>
             </h1>
             <p className="text-xl text-earth-600 mb-8 leading-relaxed">
               Discover how scripture guides us to nourish our bodies with the foods 
@@ -185,7 +185,7 @@ export default function NutritionPage() {
                 <h3 className="text-xl font-display font-semibold mb-4">{principle.title}</h3>
                 <p className="text-earth-600 mb-4">{principle.description}</p>
                 <blockquote className="text-earth-700 mb-4 italic border-l-4 border-primary-200 pl-4 text-sm">
-                  "{principle.scripture}"
+                  &ldquo;{principle.scripture}&rdquo;
                 </blockquote>
                 <p className="text-earth-600">
                   <strong>Application:</strong> {principle.application}
@@ -227,7 +227,7 @@ export default function NutritionPage() {
                 </div>
 
                 <blockquote className="text-earth-700 italic border-l-4 border-primary-200 pl-4 text-sm">
-                  "{plan.verse}"
+                  &ldquo;{plan.verse}&rdquo;
                 </blockquote>
               </div>
             ))}
@@ -271,7 +271,7 @@ export default function NutritionPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-earth-900">Eat Mindfully</h4>
-                    <p className="text-earth-600 text-sm">Slow down and savor your food, recognizing it as God's gift.</p>
+                    <p className="text-earth-600 text-sm">Slow down and savor your food, recognizing it as God&apos;s gift.</p>
                   </div>
                 </div>
               </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, BookOpen, Leaf, Users, ArrowRight, Quote } from 'lucide-react'
+import { Heart, BookOpen, Leaf, Users, ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Biblical Wellness | Scripture-Based Health Principles',
@@ -114,7 +114,7 @@ export default function BiblicalWellnessPage() {
                 <h3 className="text-xl font-display font-semibold mb-2">{principle.title}</h3>
                 <p className="text-sm text-primary-600 font-medium mb-4">{principle.verse}</p>
                 <blockquote className="text-earth-700 mb-4 italic border-l-4 border-primary-200 pl-4">
-                  "{principle.content}"
+                  &ldquo;{principle.content}&rdquo;
                 </blockquote>
                 <p className="text-earth-600">
                   <strong>Application:</strong> {principle.application}

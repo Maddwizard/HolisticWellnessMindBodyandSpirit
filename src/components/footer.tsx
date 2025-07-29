@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Heart, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
+import { NewsletterSignup } from './newsletter-signup'
 
 const footerLinks = {
   wellness: [
@@ -37,9 +38,9 @@ export function Footer() {
   return (
     <footer className="bg-earth-900 text-white">
       <div className="container-custom section-padding">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" />
@@ -116,6 +117,17 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Newsletter Signup */}
+          <div className="lg:col-span-2">
+            <h3 className="font-display font-semibold text-lg mb-4">Stay Connected</h3>
+            <p className="text-earth-300 mb-4">
+              Get weekly wellness tips and biblical insights delivered to your inbox.
+            </p>
+            <div className="bg-earth-800 rounded-lg p-4">
+              <NewsletterSignup />
+            </div>
           </div>
         </div>
 
