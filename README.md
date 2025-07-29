@@ -1,6 +1,28 @@
-# Holistic Christian Wellness Website
+# Holistic Mind, Body & Spirit
 
-A modern, comprehensive website for Christian holistic wellness, built with Next.js, Supabase, and Vercel. This platform integrates biblical wisdom with modern wellness practices to help users transform their mind, body, and spirit.
+*Sharing biblical wisdom on natural health alternatives through education and faith*
+
+## Mission
+Educational platform providing information on natural alternatives to medications including:
+- 🥗 **Nutrition** - Biblical foods and healing recipes
+- 🏃‍♀️ **Exercise** - Movement as worship and health
+- 🙏 **Meditation** - Prayer, mindfulness, and spiritual practices
+- ✝️ **Biblical Wellness** - Scripture-based health principles
+
+## Important Disclaimer
+**This website provides educational information only.** Content is not intended as medical advice, diagnosis, or treatment. Always consult healthcare professionals for medical concerns.
+
+## Tech Stack
+- **Framework:** Next.js 14 (App Router)
+- **Database:** Supabase
+- **Deployment:** Vercel
+- **Development:** Cursor IDE
+
+## Getting Started
+```bash
+npm install
+npm run dev
+```
 
 ## 🎯 Mission
 

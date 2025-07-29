@@ -28,6 +28,9 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.development
+.env.production
+.env.test
 
 # vercel
 .vercel
@@ -110,4 +113,60 @@ jspm_packages/
 .tern-port
 
 # Stores VSCode versions used for testing VSCode extensions
-.vscode-test 
+.vscode-test
+
+# Supabase
+.supabase/
+supabase/.branches/
+supabase/.temp/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# OS generated files
+.DS_Store?
+ehthumbs.db
+Icon?
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# Local development
+.local/
+local/
+
+# API keys and secrets
+.secrets
+secrets.json
+secrets.yaml
+
+# Uploads and media (if not using CDN)
+uploads/
+media/
+
+# Performance monitoring
+.next/analyze/
+
+# Storybook
+storybook-static/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Turbo
+.turbo/ 
