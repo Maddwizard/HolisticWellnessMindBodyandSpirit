@@ -10,7 +10,7 @@ export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 // Server-side Supabase client (for API routes and server components)
 export const createServerClient = () => {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error('Missing Supabase environment variables')
+    return null
   }
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
@@ -23,7 +23,7 @@ export const createServerClient = () => {
 export const createAdminClient = () => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !serviceRoleKey) {
-    throw new Error('Missing Supabase environment variables')
+    return null
   }
   return createClient(supabaseUrl, serviceRoleKey, {
     auth: {
