@@ -1,8 +1,14 @@
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Initialize OpenAI client only if API key is available
+const getOpenAIClient = () => {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OpenAI API key not configured')
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+}
 
 // Prohibited content categories
 const PROHIBITED_KEYWORDS = [
@@ -102,12 +108,13 @@ export async function moderateContent(content: string, section: string): Promise
 
 async function checkOpenAIModerationAPI(content: string): Promise<ModerationResult> {
   try {
+    const openai = getOpenAIClient()
     const response = await openai.moderations.create({
       input: content,
     })
 
     const result = response.results[0]
-    const flaggedCategories = []
+    const flaggedCategories: string[] = []
 
     if (result.flagged) {
       Object.entries(result.categories).forEach(([category, flagged]) => {
@@ -174,7 +181,6 @@ function validateChristianContent(content: string, section: string): ModerationR
 }
 
 function checkMedicalClaims(content: string): ModerationResult {
-  const contentLower = content.toLowerCase()
   const problematicClaims = [
     /cure\s+(cancer|diabetes|heart disease|aids)/gi,
     /guaranteed\s+(healing|cure)/gi,
@@ -216,6 +222,7 @@ Respond with:
 Be strict but fair. Reject anything that could harm readers physically, spiritually, or emotionally.
 `
 
+    const openai = getOpenAIClient()
     const response = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [

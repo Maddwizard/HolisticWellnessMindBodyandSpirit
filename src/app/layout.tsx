@@ -136,15 +136,8 @@ export default function RootLayout({
               ],
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+1-555-123-4567",
                 "contactType": "customer service",
-                "email": "hello@holisticwellnessmindbodyspirit.com"
-              },
-              "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "Nashville",
-                "addressRegion": "TN",
-                "addressCountry": "US"
+                "email": "hello@holisticwellnessafter50.com"
               },
               "foundingDate": "2024",
               "areaServed": "Worldwide",

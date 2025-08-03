@@ -3,9 +3,18 @@ import OpenAI from 'openai'
 import { createClient } from '@supabase/supabase-js'
 import { moderateContent } from '@/lib/content-moderation'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic'
+
+// Initialize OpenAI client only if API key is available
+const getOpenAIClient = () => {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OpenAI API key not configured')
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+}
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -75,7 +84,7 @@ export async function POST(request: NextRequest) {
 
         if (error) {
           console.error(`Database error for ${section}:`, error)
-          results.push({ section, contentType, success: false, error: error.message })
+          results.push({ section, contentType, success: false, error: error instanceof Error ? error.message : 'Unknown error' })
         } else {
           results.push({ 
             section, 
@@ -86,7 +95,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         console.error(`Content generation error for ${section}:`, error)
-        results.push({ section, contentType, success: false, error: error.message })
+        results.push({ section, contentType, success: false, error: error instanceof Error ? error.message : 'Unknown error' })
       }
     }
 
@@ -141,6 +150,7 @@ async function generateContentForSection(section: string, contentType: string) {
       prompt = `${basePrompt}\n\nGenerate helpful, engaging content that would be valuable for visitors to this section.`
   }
 
+  const openai = getOpenAIClient()
   const completion = await openai.chat.completions.create({
     model: 'gpt-4',
     messages: [

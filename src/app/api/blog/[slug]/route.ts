@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
@@ -38,7 +41,7 @@ export async function GET(
     const data = await beehiivResponse.json()
     
     // Find post by slug (assuming slug is derived from title or ID)
-    const post = data.data.find((post: any) => {
+    const post = data.data.find((post: { title?: string; id: string }) => {
       const slugFromTitle = post.title
         ?.toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')

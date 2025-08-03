@@ -24,6 +24,7 @@ interface BlogListResponse {
     total_results: number
     total_pages: number
   }
+  message?: string
 }
 
 export function BlogList() {

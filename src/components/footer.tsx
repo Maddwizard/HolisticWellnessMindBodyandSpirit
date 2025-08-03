@@ -55,15 +55,7 @@ export function Footer() {
             <div className="space-y-2">
               <div className="flex items-center space-x-3 text-earth-300">
                 <Mail className="w-4 h-4" />
-                <span>hello@holisticchristianwellness.com</span>
-              </div>
-              <div className="flex items-center space-x-3 text-earth-300">
-                <Phone className="w-4 h-4" />
-                <span>(555) 123-4567</span>
-              </div>
-              <div className="flex items-center space-x-3 text-earth-300">
-                <MapPin className="w-4 h-4" />
-                <span>Nashville, TN</span>
+                <span>hello@holisticwellnessafter50.com</span>
               </div>
             </div>
           </div>

@@ -1,7 +1,10 @@
--- Holistic Christian Wellness Database Schema (FIXED FOR HEALTH CHECK)
--- Run this in your Supabase SQL Editor to create the complete database with all fixes
+-- ========================================
+-- HOLISTIC WELLNESS DATABASE SETUP
+-- ========================================
+-- Complete database script for holisticwellnessmindbodyspirit.com
+-- Copy and paste this entire script into your Supabase SQL Editor
 
--- Enable necessary extensions
+-- Create extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
@@ -49,8 +52,6 @@ CREATE TABLE IF NOT EXISTS public.posts (
   likes_count INTEGER DEFAULT 0
 );
 
-
-
 -- Resources (articles, videos, podcasts, courses, guides)
 CREATE TABLE IF NOT EXISTS public.resources (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -72,6 +73,21 @@ CREATE TABLE IF NOT EXISTS public.resources (
   download_count INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Generated content table for AI-generated content
+CREATE TABLE IF NOT EXISTS public.generated_content (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  section text NOT NULL,
+  content_type text NOT NULL,
+  content text NOT NULL,
+  moderation_score real DEFAULT 0,
+  flagged_reasons text[] DEFAULT '{}',
+  generated_at timestamp with time zone DEFAULT now(),
+  is_published boolean DEFAULT false,
+  published_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now()
 );
 
 -- ========================================
@@ -288,6 +304,7 @@ CREATE TABLE IF NOT EXISTS public.resource_interactions (
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.resources ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.generated_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.community_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
@@ -302,13 +319,11 @@ ALTER TABLE public.event_registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.resource_interactions ENABLE ROW LEVEL SECURITY;
 
-
 -- ========================================
--- OPTIMIZED RLS POLICIES (FIXED FOR HEALTH CHECK)
+-- RLS POLICIES
 -- ========================================
 
--- Profiles policies (optimized)
-DROP POLICY IF EXISTS "Profile Management" ON public.profiles;
+-- Profiles policies
 CREATE POLICY "Profile Management" ON public.profiles
 FOR ALL USING (
     auth.uid() = id
@@ -316,8 +331,7 @@ FOR ALL USING (
     auth.uid() = id
 );
 
--- Posts policies (consolidated - single policy)
-DROP POLICY IF EXISTS "Posts Management" ON public.posts;
+-- Posts policies
 CREATE POLICY "Posts Management" ON public.posts
 FOR ALL USING (
     status = 'published' OR auth.uid() = author_id
@@ -325,8 +339,7 @@ FOR ALL USING (
     auth.uid() = author_id
 );
 
--- Resources policies (optimized)
-DROP POLICY IF EXISTS "Resources Management" ON public.resources;
+-- Resources policies
 CREATE POLICY "Resources Management" ON public.resources
 FOR SELECT USING (
     NOT is_premium OR 
@@ -336,13 +349,20 @@ FOR SELECT USING (
     )
 );
 
-DROP POLICY IF EXISTS "Resources Creation" ON public.resources;
 CREATE POLICY "Resources Creation" ON public.resources
 FOR INSERT WITH CHECK (auth.uid() = author_id);
 
-DROP POLICY IF EXISTS "Resources Update" ON public.resources;
 CREATE POLICY "Resources Update" ON public.resources
 FOR UPDATE USING (auth.uid() = author_id);
+
+-- Generated content policies
+CREATE POLICY "Allow service role to manage generated content" ON public.generated_content
+FOR ALL TO service_role
+USING (true);
+
+CREATE POLICY "Allow authenticated users to view published content" ON public.generated_content
+FOR SELECT TO authenticated
+USING (is_published = true);
 
 -- Testimonials policies
 CREATE POLICY "Approved testimonials are viewable by everyone" ON public.testimonials
@@ -371,8 +391,7 @@ FOR INSERT WITH CHECK (auth.uid() = author_id);
 CREATE POLICY "Users can update own comments" ON public.comments
 FOR UPDATE USING (auth.uid() = author_id);
 
--- Prayer requests policies (consolidated - single policy)
-DROP POLICY IF EXISTS "Prayer Requests Management" ON public.prayer_requests;
+-- Prayer requests policies
 CREATE POLICY "Prayer Requests Management" ON public.prayer_requests
 FOR ALL USING (
     NOT is_private OR auth.uid() = author_id
@@ -404,85 +423,90 @@ FOR SELECT USING (is_active = true);
 CREATE POLICY "Users can only access own event registrations" ON public.event_registrations
 FOR ALL USING (auth.uid() = user_id);
 
--- Membership tiers policies (FIXED - was missing)
+-- Membership tiers policies
 CREATE POLICY "Membership tiers are viewable by everyone" ON public.membership_tiers
 FOR SELECT USING (is_active = true);
 
--- Page views policies (FIXED - was missing)
+-- Page views policies
 CREATE POLICY "Page views are insertable by everyone" ON public.page_views
 FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Page views are viewable by authenticated users" ON public.page_views
 FOR SELECT USING (auth.uid() IS NOT NULL);
 
--- Resource interactions policies (FIXED - was missing)
+-- Resource interactions policies
 CREATE POLICY "Resource interactions are insertable by everyone" ON public.resource_interactions
 FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Resource interactions are viewable by authenticated users" ON public.resource_interactions
 FOR SELECT USING (auth.uid() IS NOT NULL);
 
-
-
 -- ========================================
--- OPTIMIZED INDEXES FOR PERFORMANCE (FIXED FOR HEALTH CHECK)
+-- INDEXES FOR PERFORMANCE
 -- ========================================
 
--- Optimized composite indexes for common query patterns
+-- Posts indexes
 CREATE INDEX IF NOT EXISTS idx_posts_status_published_at_author ON public.posts(status, published_at, author_id);
 CREATE INDEX IF NOT EXISTS idx_posts_tags_gin ON public.posts USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_posts_published_active ON public.posts(published_at, author_id) WHERE status = 'published';
 
+-- Resources indexes
 CREATE INDEX IF NOT EXISTS idx_resources_type_category_premium ON public.resources(type, category, is_premium);
 CREATE INDEX IF NOT EXISTS idx_resources_tags_gin ON public.resources USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_resources_author_id ON public.resources(author_id);
 
+-- Generated content indexes
+CREATE INDEX IF NOT EXISTS idx_generated_content_section ON public.generated_content(section);
+CREATE INDEX IF NOT EXISTS idx_generated_content_type ON public.generated_content(content_type);
+CREATE INDEX IF NOT EXISTS idx_generated_content_published ON public.generated_content(is_published);
+CREATE INDEX IF NOT EXISTS idx_generated_content_generated_at ON public.generated_content(generated_at);
+CREATE INDEX IF NOT EXISTS idx_generated_content_created_at ON public.generated_content(created_at);
+
+-- Community posts indexes
 CREATE INDEX IF NOT EXISTS idx_community_posts_category_approved_created ON public.community_posts(category, is_approved, created_at);
 CREATE INDEX IF NOT EXISTS idx_community_posts_author_approved ON public.community_posts(author_id, is_approved);
+CREATE INDEX IF NOT EXISTS idx_community_posts_recent_approved ON public.community_posts(created_at, author_id) WHERE is_approved = true;
 
+-- Comments indexes
 CREATE INDEX IF NOT EXISTS idx_comments_post_approved_created ON public.comments(post_id, is_approved, created_at);
 CREATE INDEX IF NOT EXISTS idx_comments_author_approved ON public.comments(author_id, is_approved);
 
-CREATE INDEX IF NOT EXISTS idx_wellness_journals_user_date_created ON public.wellness_journals(user_id, entry_date, created_at);
-
-CREATE INDEX IF NOT EXISTS idx_events_start_date_active_type ON public.events(start_date, is_active, type);
-CREATE INDEX IF NOT EXISTS idx_events_host_active ON public.events(host_id, is_active);
-
--- Foreign key indexes (FIXED - was missing)
-CREATE INDEX IF NOT EXISTS idx_event_registrations_event_id ON public.event_registrations(event_id);
-CREATE INDEX IF NOT EXISTS idx_event_registrations_user_id ON public.event_registrations(user_id);
-
-CREATE INDEX IF NOT EXISTS idx_page_views_user_id ON public.page_views(user_id);
-CREATE INDEX IF NOT EXISTS idx_page_views_viewed_at ON public.page_views(viewed_at);
-CREATE INDEX IF NOT EXISTS idx_page_views_page_path ON public.page_views(page_path);
-
+-- Prayer requests indexes
 CREATE INDEX IF NOT EXISTS idx_prayer_requests_author_id ON public.prayer_requests(author_id);
 CREATE INDEX IF NOT EXISTS idx_prayer_requests_answered_by ON public.prayer_requests(answered_by);
 CREATE INDEX IF NOT EXISTS idx_prayer_requests_category ON public.prayer_requests(category);
 CREATE INDEX IF NOT EXISTS idx_prayer_requests_created_at ON public.prayer_requests(created_at);
 
-CREATE INDEX IF NOT EXISTS idx_resources_author_id ON public.resources(author_id);
+-- Wellness journals indexes
+CREATE INDEX IF NOT EXISTS idx_wellness_journals_user_date_created ON public.wellness_journals(user_id, entry_date, created_at);
 
-CREATE INDEX IF NOT EXISTS idx_resource_interactions_resource_id ON public.resource_interactions(resource_id);
-CREATE INDEX IF NOT EXISTS idx_resource_interactions_user_id ON public.resource_interactions(user_id);
-CREATE INDEX IF NOT EXISTS idx_resource_interactions_created_at ON public.resource_interactions(created_at);
+-- Wellness goals indexes
+CREATE INDEX IF NOT EXISTS idx_wellness_goals_user_id ON public.wellness_goals(user_id);
+CREATE INDEX IF NOT EXISTS idx_wellness_goals_category ON public.wellness_goals(category);
 
+-- Events indexes
+CREATE INDEX IF NOT EXISTS idx_events_start_date_active_type ON public.events(start_date, is_active, type);
+CREATE INDEX IF NOT EXISTS idx_events_host_active ON public.events(host_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_events_upcoming_active ON public.events(start_date, host_id) WHERE start_date > NOW() AND is_active = true;
+
+-- Event registrations indexes
+CREATE INDEX IF NOT EXISTS idx_event_registrations_event_id ON public.event_registrations(event_id);
+CREATE INDEX IF NOT EXISTS idx_event_registrations_user_id ON public.event_registrations(user_id);
+
+-- User memberships indexes
 CREATE INDEX IF NOT EXISTS idx_user_memberships_user_id ON public.user_memberships(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_memberships_tier_id ON public.user_memberships(tier_id);
 CREATE INDEX IF NOT EXISTS idx_user_memberships_status ON public.user_memberships(status);
 
-CREATE INDEX IF NOT EXISTS idx_wellness_goals_user_id ON public.wellness_goals(user_id);
-CREATE INDEX IF NOT EXISTS idx_wellness_goals_category ON public.wellness_goals(category);
+-- Page views indexes
+CREATE INDEX IF NOT EXISTS idx_page_views_user_id ON public.page_views(user_id);
+CREATE INDEX IF NOT EXISTS idx_page_views_viewed_at ON public.page_views(viewed_at);
+CREATE INDEX IF NOT EXISTS idx_page_views_page_path ON public.page_views(page_path);
 
-
-
--- Partial indexes for better performance on active content
-CREATE INDEX IF NOT EXISTS idx_posts_published_active ON public.posts(published_at, author_id) 
-WHERE status = 'published';
-
-CREATE INDEX IF NOT EXISTS idx_events_upcoming_active ON public.events(start_date, host_id) 
-WHERE start_date > NOW() AND is_active = true;
-
-CREATE INDEX IF NOT EXISTS idx_community_posts_recent_approved ON public.community_posts(created_at, author_id) 
-WHERE is_approved = true;
+-- Resource interactions indexes
+CREATE INDEX IF NOT EXISTS idx_resource_interactions_resource_id ON public.resource_interactions(resource_id);
+CREATE INDEX IF NOT EXISTS idx_resource_interactions_user_id ON public.resource_interactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_resource_interactions_created_at ON public.resource_interactions(created_at);
 
 -- ========================================
 -- TRIGGERS FOR UPDATED_AT
@@ -498,64 +522,50 @@ END;
 $$ language 'plpgsql';
 
 -- Apply triggers to tables with updated_at
-DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_posts_updated_at ON public.posts;
 CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON public.posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_resources_updated_at ON public.resources;
 CREATE TRIGGER update_resources_updated_at BEFORE UPDATE ON public.resources FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_testimonials_updated_at ON public.testimonials;
+CREATE TRIGGER update_generated_content_updated_at BEFORE UPDATE ON public.generated_content FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_testimonials_updated_at BEFORE UPDATE ON public.testimonials FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_community_posts_updated_at ON public.community_posts;
 CREATE TRIGGER update_community_posts_updated_at BEFORE UPDATE ON public.community_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_comments_updated_at ON public.comments;
 CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON public.comments FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_prayer_requests_updated_at ON public.prayer_requests;
 CREATE TRIGGER update_prayer_requests_updated_at BEFORE UPDATE ON public.prayer_requests FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_wellness_journals_updated_at ON public.wellness_journals;
 CREATE TRIGGER update_wellness_journals_updated_at BEFORE UPDATE ON public.wellness_journals FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_wellness_goals_updated_at ON public.wellness_goals;
 CREATE TRIGGER update_wellness_goals_updated_at BEFORE UPDATE ON public.wellness_goals FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_user_memberships_updated_at ON public.user_memberships;
 CREATE TRIGGER update_user_memberships_updated_at BEFORE UPDATE ON public.user_memberships FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-DROP TRIGGER IF EXISTS update_events_updated_at ON public.events;
 CREATE TRIGGER update_events_updated_at BEFORE UPDATE ON public.events FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ========================================
--- SAMPLE DATA (Optional)
+-- SAMPLE DATA
 -- ========================================
 
--- Insert sample membership tiers (if they don't exist)
-INSERT INTO public.membership_tiers (name, description, price, interval, features, is_popular) 
-SELECT 'Free', 'Basic access to wellness resources', 0, 'lifetime', ARRAY['Access to basic articles', 'Community forum access', 'Newsletter subscription'], false
-WHERE NOT EXISTS (SELECT 1 FROM public.membership_tiers WHERE name = 'Free');
+-- Insert sample membership tiers
+INSERT INTO public.membership_tiers (name, description, price, interval, features, is_popular) VALUES
+('Free', 'Basic access to wellness resources', 0, 'lifetime', ARRAY['Access to basic articles', 'Community forum access', 'Newsletter subscription'], false),
+('Premium', 'Full access to all wellness content', 19.99, 'monthly', ARRAY['All free features', 'Premium courses', 'Expert consultations', 'Personalized meal plans', 'Wellness tracking tools', 'Priority support'], true),
+('Lifetime', 'One-time payment for lifetime access', 299.99, 'lifetime', ARRAY['All premium features', 'Lifetime updates', 'Exclusive content', 'VIP community access', 'Personal wellness coach'], false)
+ON CONFLICT DO NOTHING;
 
-INSERT INTO public.membership_tiers (name, description, price, interval, features, is_popular) 
-SELECT 'Premium', 'Full access to all wellness content', 19.99, 'monthly', ARRAY['All free features', 'Premium courses', 'Expert consultations', 'Personalized meal plans', 'Wellness tracking tools', 'Priority support'], true
-WHERE NOT EXISTS (SELECT 1 FROM public.membership_tiers WHERE name = 'Premium');
+-- Insert sample events
+INSERT INTO public.events (title, description, type, start_date, end_date, location, max_capacity, price, is_featured) VALUES
+('Biblical Wellness Workshop', 'Learn how to integrate faith with modern wellness practices', 'online', NOW() + INTERVAL '7 days', NOW() + INTERVAL '7 days' + INTERVAL '2 hours', 'Online', 100, 29.99, true),
+('Christian Nutrition Seminar', 'Discover biblical foods and nutrition principles', 'hybrid', NOW() + INTERVAL '14 days', NOW() + INTERVAL '14 days' + INTERVAL '3 hours', 'Nashville, TN', 50, 49.99, false)
+ON CONFLICT DO NOTHING;
 
-INSERT INTO public.membership_tiers (name, description, price, interval, features, is_popular) 
-SELECT 'Lifetime', 'One-time payment for lifetime access', 299.99, 'lifetime', ARRAY['All premium features', 'Lifetime updates', 'Exclusive content', 'VIP community access', 'Personal wellness coach'], false
-WHERE NOT EXISTS (SELECT 1 FROM public.membership_tiers WHERE name = 'Lifetime');
+-- Insert sample generated content
+INSERT INTO public.generated_content (section, content_type, content, is_published) VALUES
+('biblical-wellness', 'article', 'Biblical wellness combines spiritual practices with physical health, following the principle that our bodies are temples of the Holy Spirit.', true),
+('nutrition', 'guide', 'Christian nutrition focuses on whole, natural foods as God''s provision for our nourishment and health.', true),
+('exercise', 'workout', 'Faith-based exercise integrates physical movement with spiritual reflection, treating exercise as a form of worship.', true),
+('mental-health', 'meditation', 'Christian mental health practices include prayer, meditation on scripture, and community support.', true)
+ON CONFLICT DO NOTHING;
 
--- Insert sample events (if they don't exist)
-INSERT INTO public.events (title, description, type, start_date, end_date, location, max_capacity, price, is_featured) 
-SELECT 'Biblical Wellness Workshop', 'Learn how to integrate faith with modern wellness practices', 'online', NOW() + INTERVAL '7 days', NOW() + INTERVAL '7 days' + INTERVAL '2 hours', 'Online', 100, 29.99, true
-WHERE NOT EXISTS (SELECT 1 FROM public.events WHERE title = 'Biblical Wellness Workshop');
-
-INSERT INTO public.events (title, description, type, start_date, end_date, location, max_capacity, price, is_featured) 
-SELECT 'Christian Nutrition Seminar', 'Discover biblical foods and nutrition principles', 'hybrid', NOW() + INTERVAL '14 days', NOW() + INTERVAL '14 days' + INTERVAL '3 hours', 'Nashville, TN', 50, 49.99, false
-WHERE NOT EXISTS (SELECT 1 FROM public.events WHERE title = 'Christian Nutrition Seminar');
+-- Insert sample testimonials
+INSERT INTO public.testimonials (name, role, content, rating, is_featured, is_approved) VALUES
+('Sarah Johnson', 'Wellness Coach', 'This community has transformed my approach to health and spirituality. The biblical foundation makes all the difference.', 5, true, true),
+('Michael Chen', 'Fitness Enthusiast', 'Finding a place that combines faith with fitness has been life-changing. The support here is incredible.', 5, true, true),
+('Emily Rodriguez', 'Nutritionist', 'The holistic approach to wellness here is exactly what I was looking for. It''s more than just physical health.', 5, false, true)
+ON CONFLICT DO NOTHING;
 
 -- ========================================
 -- PERFORMANCE OPTIMIZATIONS
@@ -583,6 +593,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 ANALYZE public.profiles;
 ANALYZE public.posts;
 ANALYZE public.resources;
+ANALYZE public.generated_content;
 ANALYZE public.testimonials;
 ANALYZE public.community_posts;
 ANALYZE public.comments;
@@ -598,61 +609,69 @@ ANALYZE public.page_views;
 ANALYZE public.resource_interactions;
 
 -- ========================================
--- AI GENERATED CONTENT TABLE
+-- VERIFICATION QUERIES
 -- ========================================
 
--- Create generated_content table for AI content storage
-CREATE TABLE IF NOT EXISTS public.generated_content (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  section text NOT NULL,
-  content_type text NOT NULL,
-  content text NOT NULL,
-  moderation_score real DEFAULT 0,
-  flagged_reasons text[] DEFAULT '{}',
-  generated_at timestamp with time zone DEFAULT now(),
-  is_published boolean DEFAULT false,
-  published_at timestamp with time zone,
-  created_at timestamp with time zone DEFAULT now(),
-  updated_at timestamp with time zone DEFAULT now()
-);
+-- Check all tables were created
+SELECT 
+  table_name,
+  table_type
+FROM information_schema.tables 
+WHERE table_schema = 'public' 
+AND table_type = 'BASE TABLE'
+ORDER BY table_name;
 
--- Enable Row Level Security for generated_content
-ALTER TABLE public.generated_content ENABLE ROW LEVEL SECURITY;
+-- Check RLS is enabled on all tables
+SELECT 
+  schemaname,
+  tablename,
+  rowsecurity
+FROM pg_tables 
+WHERE schemaname = 'public' 
+AND tablename IN (
+  'profiles', 'posts', 'resources', 'generated_content', 'testimonials',
+  'community_posts', 'comments', 'prayer_requests', 'wellness_journals',
+  'wellness_goals', 'newsletter_subscriptions', 'membership_tiers',
+  'user_memberships', 'events', 'event_registrations', 'page_views',
+  'resource_interactions'
+)
+ORDER BY tablename;
 
--- Create policies for generated_content (admin only access)
-CREATE POLICY "Allow service role to manage generated content" ON public.generated_content
-  FOR ALL TO service_role
-  USING (true);
+-- Check policies were created
+SELECT 
+  schemaname,
+  tablename,
+  policyname,
+  permissive,
+  roles,
+  cmd
+FROM pg_policies 
+WHERE schemaname = 'public'
+ORDER BY tablename, policyname;
 
--- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_generated_content_section ON public.generated_content(section);
-CREATE INDEX IF NOT EXISTS idx_generated_content_type ON public.generated_content(content_type);
-CREATE INDEX IF NOT EXISTS idx_generated_content_published ON public.generated_content(is_published);
-CREATE INDEX IF NOT EXISTS idx_generated_content_generated_at ON public.generated_content(generated_at);
-
--- Trigger to automatically update updated_at
-DROP TRIGGER IF EXISTS update_generated_content_updated_at ON public.generated_content;
-CREATE TRIGGER update_generated_content_updated_at 
-  BEFORE UPDATE ON public.generated_content 
-  FOR EACH ROW 
-  EXECUTE FUNCTION update_updated_at_column();
-
-
+-- Check indexes were created
+SELECT 
+  schemaname,
+  tablename,
+  indexname,
+  indexdef
+FROM pg_indexes 
+WHERE schemaname = 'public'
+ORDER BY tablename, indexname;
 
 -- ========================================
--- COMPLETION MESSAGE
+-- SUCCESS MESSAGE
 -- ========================================
 
--- This schema creates a comprehensive database for your Holistic Christian Wellness website
--- All tables include proper relationships, constraints, and security policies
--- All health check issues have been addressed:
--- ✅ Added missing RLS policies for membership_tiers, page_views, and resource_interactions
--- ✅ Removed redundant RLS policies on posts, prayer_requests, and resources
--- ✅ Added missing foreign key indexes for all flagged tables
--- ✅ Removed unused indexes that were causing performance overhead
--- ✅ Created optimized composite indexes for better query performance
--- ✅ Optimized RLS policies to reduce auth function calls
--- ✅ Added partial indexes for active content queries
--- ✅ Updated table statistics for better query planning
--- ✅ Added generated_content table for AI content management
--- The database is now optimized for security and performance! 
+-- Display success message
+DO $$
+BEGIN
+    RAISE NOTICE '✅ Database setup completed successfully!';
+    RAISE NOTICE '📊 Tables created: 17';
+    RAISE NOTICE '🔒 RLS enabled on all tables';
+    RAISE NOTICE '📋 Policies created for secure access';
+    RAISE NOTICE '⚡ Indexes created for performance';
+    RAISE NOTICE '🔄 Triggers created for automatic updates';
+    RAISE NOTICE '📝 Sample data inserted';
+    RAISE NOTICE '🎯 Ready for holisticwellnessmindbodyspirit.com!';
+END $$; 

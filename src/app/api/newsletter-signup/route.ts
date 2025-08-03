@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const beehiivResponse = await fetch(`https://api.beehiiv.com/v2/publications/${BEEHIIV_PUBLICATION_ID}/subscriptions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${BEEHIIV_API_KEY}`,
+        'Authorization': `${BEEHIIV_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

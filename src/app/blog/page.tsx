@@ -11,7 +11,7 @@ export default function BlogPage() {
               Holistic Wellness Blog
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover natural health insights, wellness tips, and holistic approaches to living your best life
+              Discover biblical wisdom, wellness tips, and holistic approaches to living your best life
             </p>
           </div>
           

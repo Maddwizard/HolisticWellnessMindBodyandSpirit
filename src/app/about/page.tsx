@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heart, Users, BookOpen } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import { FeatureSection } from '@/components/feature-section'
 
 export default function AboutPage() {
@@ -18,7 +18,7 @@ export default function AboutPage() {
               About Our Mission
             </h1>
             <p className="text-xl text-earth-700 mb-8 max-w-3xl mx-auto">
-              We're dedicated to helping believers achieve holistic wellness by integrating 
+              We&apos;re dedicated to helping believers achieve holistic wellness by integrating 
               faith, physical health, mental well-being, and spiritual growth.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
