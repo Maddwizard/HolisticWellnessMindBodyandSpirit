@@ -1,14 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 import { createBrowserClient } from '@supabase/ssr'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
 
 // Client-side Supabase client
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
 // Server-side Supabase client (for API routes and server components)
 export const createServerClient = () => {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    throw new Error('Missing Supabase environment variables')
+  }
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: false,
@@ -18,7 +21,10 @@ export const createServerClient = () => {
 
 // Admin client for server-side operations (use with caution)
 export const createAdminClient = () => {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !serviceRoleKey) {
+    throw new Error('Missing Supabase environment variables')
+  }
   return createClient(supabaseUrl, serviceRoleKey, {
     auth: {
       persistSession: false,

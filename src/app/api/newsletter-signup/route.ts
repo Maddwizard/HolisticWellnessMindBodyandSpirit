@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+const createSupabaseClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  
+  if (!supabaseUrl || !serviceRoleKey) {
+    return null
+  }
+  
+  return createClient(supabaseUrl, serviceRoleKey)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,24 +75,27 @@ export async function POST(request: NextRequest) {
     const beehiivData = await beehiivResponse.json()
 
     // Also save to Supabase database for analytics and backup
-    try {
-      const { error: dbError } = await supabase
-        .from('newsletter_subscriptions')
-        .upsert({
-          email,
-          name: name || null,
-          is_active: true,
-          source: 'website',
-          subscribed_at: new Date().toISOString(),
-        })
+    const supabase = createSupabaseClient()
+    if (supabase) {
+      try {
+        const { error: dbError } = await supabase
+          .from('newsletter_subscriptions')
+          .upsert({
+            email,
+            name: name || null,
+            is_active: true,
+            source: 'website',
+            subscribed_at: new Date().toISOString(),
+          })
 
-      if (dbError) {
-        console.error('Database save error:', dbError)
-        // Don't fail the whole request if database save fails
+        if (dbError) {
+          console.error('Database save error:', dbError)
+          // Don't fail the whole request if database save fails
+        }
+      } catch (dbError) {
+        console.error('Database connection error:', dbError)
+        // Don't fail the whole request if database is unavailable
       }
-    } catch (dbError) {
-      console.error('Database connection error:', dbError)
-      // Don't fail the whole request if database is unavailable
     }
 
     return NextResponse.json({
