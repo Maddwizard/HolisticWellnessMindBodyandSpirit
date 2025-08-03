@@ -1,6 +1,8 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 import './globals.css'
 import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
@@ -155,6 +157,8 @@ export default function RootLayout({
             <Footer />
           </div>
         </Providers>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   )

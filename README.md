@@ -72,11 +72,19 @@ To provide a faith-based approach to holistic wellness that honors God through p
    ```
 
 3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
+   Copy the environment template and add your credentials:
+   ```bash
+   cp .env.template .env.local
+   ```
+   
+   Then edit `.env.local` with your actual values:
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   BEEHIIV_PUBLICATION_ID=your_beehiiv_publication_id
+   BEEHIIV_API_KEY=your_beehiiv_api_key
+   OPENAI_API_KEY=your_openai_api_key (optional)
    ```
 
 4. **Run the development server**

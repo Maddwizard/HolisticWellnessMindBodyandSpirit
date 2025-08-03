@@ -13,6 +13,8 @@
     "@hookform/resolvers": "^3.3.2",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.38.5",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.16",
     "lucide-react": "^0.294.0",
