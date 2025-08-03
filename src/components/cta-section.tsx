@@ -16,12 +16,7 @@ export function CTASection() {
     <section className="section-padding bg-gradient-to-br from-primary-600 to-secondary-600 text-white">
       <div className="container-custom">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-            <Star className="w-4 h-4 text-yellow-300 fill-current" />
-            <span className="text-sm font-medium">
-              Join 10,000+ believers on their wellness journey
-            </span>
-          </div>
+
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 text-balance">
             Start Your{' '}

@@ -96,11 +96,7 @@ export function TestimonialSection() {
         {/* Trust Indicators */}
         <div className="mt-16 text-center">
           <div className="inline-flex items-center space-x-8 bg-white/80 backdrop-blur-sm rounded-2xl px-8 py-4 shadow-sm">
-            <div className="text-center">
-              <div className="text-2xl font-display font-bold text-primary-600">10,000+</div>
-              <div className="text-sm text-earth-600">Active Members</div>
-            </div>
-            <div className="w-px h-12 bg-earth-200"></div>
+
             <div className="text-center">
               <div className="text-2xl font-display font-bold text-secondary-600">4.9/5</div>
               <div className="text-sm text-earth-600">Average Rating</div>
