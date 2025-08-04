@@ -6,24 +6,23 @@ import { NewsletterSignup } from './newsletter-signup'
 const footerLinks = {
   wellness: [
     { name: 'Biblical Wellness', href: '/biblical-wellness' },
-    { name: 'Nutrition Guide', href: '/nutrition' },
-    { name: 'Exercise Plans', href: '/exercise' },
+    { name: 'Nutrition', href: '/nutrition' },
+    { name: 'Exercise', href: '/exercise' },
     { name: 'Mental Health', href: '/mental-health' },
-    { name: 'Spiritual Growth', href: '/biblical-wellness' },
+    { name: 'Resources', href: '/resources' },
   ],
   resources: [
-    { name: 'Free Resources', href: '/resources' },
     { name: 'Blog', href: '/blog' },
     { name: 'Newsletter', href: '/newsletter' },
     { name: 'Community', href: '/community' },
     { name: 'Membership', href: '/membership' },
+    { name: 'About Us', href: '/about' },
   ],
   support: [
-    { name: 'About Us', href: '/about' },
-    { name: 'Contact', href: '/about' },
-    { name: 'Privacy Policy', href: '/about' },
-    { name: 'Terms of Service', href: '/about' },
-    { name: 'FAQ', href: '/about' },
+    { name: 'Contact Us', href: '/about' },
+    { name: 'Help Center', href: '/resources' },
+    { name: 'Getting Started', href: '/biblical-wellness' },
+    { name: 'Support', href: '/community' },
   ],
 }
 
