@@ -42,7 +42,7 @@ const features = [
     icon: Award,
     title: 'Expert Guidance',
     description: 'Learn from certified wellness experts who integrate Christian faith with evidence-based practices.',
-    href: '/experts',
+    href: '/about',
     color: 'accent'
   }
 ]

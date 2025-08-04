@@ -109,7 +109,7 @@ export default function NutritionPage() {
               God designed for our health and vitality.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/meal-plans" className="btn-primary">
+              <Link href="/resources" className="btn-primary">
                 Get Meal Plans
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
@@ -300,7 +300,7 @@ export default function NutritionPage() {
             Join our community and discover how to honor God with your food choices and nourish your body as His temple.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/meal-plans" className="btn-primary bg-white text-primary-600 hover:bg-white/90">
+            <Link href="/resources" className="btn-primary bg-white text-primary-600 hover:bg-white/90">
               Get Your Meal Plan
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>

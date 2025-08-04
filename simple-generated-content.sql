@@ -1,3 +1,4 @@
+
 -- Simple script to add generated_content table
 -- Copy and paste this into your Supabase SQL Editor
 

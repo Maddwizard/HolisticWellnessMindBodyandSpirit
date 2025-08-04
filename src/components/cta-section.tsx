@@ -42,7 +42,7 @@ export function CTASection() {
                   </li>
                 ))}
               </ul>
-              <Link href="/trial" className="btn-outline w-full text-center border-white text-white hover:bg-white hover:text-primary-600">
+              <Link href="/membership" className="btn-outline w-full text-center border-white text-white hover:bg-white hover:text-primary-600">
                 Start Free Trial
               </Link>
             </div>

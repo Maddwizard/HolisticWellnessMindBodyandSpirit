@@ -9,29 +9,29 @@ const footerLinks = {
     { name: 'Nutrition Guide', href: '/nutrition' },
     { name: 'Exercise Plans', href: '/exercise' },
     { name: 'Mental Health', href: '/mental-health' },
-    { name: 'Spiritual Growth', href: '/spiritual-growth' },
+    { name: 'Spiritual Growth', href: '/biblical-wellness' },
   ],
   resources: [
     { name: 'Free Resources', href: '/resources' },
     { name: 'Blog', href: '/blog' },
-    { name: 'Podcast', href: '/podcast' },
+    { name: 'Newsletter', href: '/newsletter' },
     { name: 'Community', href: '/community' },
-    { name: 'Events', href: '/events' },
+    { name: 'Membership', href: '/membership' },
   ],
   support: [
     { name: 'About Us', href: '/about' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms of Service', href: '/terms' },
-    { name: 'FAQ', href: '/faq' },
+    { name: 'Contact', href: '/about' },
+    { name: 'Privacy Policy', href: '/about' },
+    { name: 'Terms of Service', href: '/about' },
+    { name: 'FAQ', href: '/about' },
   ],
 }
 
 const socialLinks = [
-  { name: 'Facebook', href: '#', icon: Facebook },
-  { name: 'Instagram', href: '#', icon: Instagram },
-  { name: 'Twitter', href: '#', icon: Twitter },
-  { name: 'YouTube', href: '#', icon: Youtube },
+  { name: 'Facebook', href: 'https://facebook.com', icon: Facebook },
+  { name: 'Instagram', href: 'https://instagram.com', icon: Instagram },
+  { name: 'Twitter', href: 'https://twitter.com', icon: Twitter },
+  { name: 'YouTube', href: 'https://youtube.com', icon: Youtube },
 ]
 
 export function Footer() {
