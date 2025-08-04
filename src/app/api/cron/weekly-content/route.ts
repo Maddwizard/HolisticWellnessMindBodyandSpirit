@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import { createClient } from '@supabase/supabase-js'
 import { moderateContent } from '@/lib/content-moderation'
 
 // Force dynamic rendering for this API route
@@ -16,7 +15,7 @@ const getOpenAIClient = () => {
   })
 }
 
-const createSupabaseClient = () => {
+const createSupabaseClient = async () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   
@@ -24,7 +23,14 @@ const createSupabaseClient = () => {
     return null
   }
   
-  return createClient(supabaseUrl, serviceRoleKey)
+  // Dynamically import and create Supabase client only when needed
+  try {
+    const { createClient } = await import('@supabase/supabase-js')
+    return createClient(supabaseUrl, serviceRoleKey)
+  } catch (error) {
+    console.error('Failed to create Supabase client:', error)
+    return null
+  }
 }
 
 // This endpoint can be called by cron services like Vercel Cron or external schedulers
@@ -76,7 +82,7 @@ export async function POST(request: NextRequest) {
         }
         
         // Store approved content in database
-        const supabase = createSupabaseClient()
+        const supabase = await createSupabaseClient()
         if (!supabase) {
           results.push({ section, contentType, success: false, error: 'Database not configured' })
           continue

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 
-const createSupabaseClient = () => {
+const createSupabaseClient = async () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   
@@ -9,7 +8,14 @@ const createSupabaseClient = () => {
     return null
   }
   
-  return createClient(supabaseUrl, serviceRoleKey)
+  // Dynamically import and create Supabase client only when needed
+  try {
+    const { createClient } = await import('@supabase/supabase-js')
+    return createClient(supabaseUrl, serviceRoleKey)
+  } catch (error) {
+    console.error('Failed to create Supabase client:', error)
+    return null
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -75,7 +81,7 @@ export async function POST(request: NextRequest) {
     const beehiivData = await beehiivResponse.json()
 
     // Also save to Supabase database for analytics and backup
-    const supabase = createSupabaseClient()
+    const supabase = await createSupabaseClient()
     if (supabase) {
       try {
         const { error: dbError } = await supabase
